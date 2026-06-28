@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: academyflow-api
+    name: proctify-api
     runtime: node
+    plan: free
     buildCommand: npm install
     startCommand: node server/index.mjs
     healthCheckPath: /api/health
@@ -28,7 +29,8 @@ services:
         sync: false
       - key: SMTP_FROM
         sync: false
-    disk:
-      name: academyflow-data
-      mountPath: /opt/render/project/src/server
-      sizeGB: 1
+    # No persistent disk: Render's disks are a paid-only feature and require a
+    # card on file even on the free plan. We don't need one anyway — MongoDB
+    # Atlas is the production data store, not the local server/data.json
+    # fallback. If MONGODB_URI is ever unset, data.json still works, it just
+    # won't persist across deploys/restarts (acceptable for a demo project).
