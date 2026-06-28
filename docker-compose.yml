@@ -1,0 +1,75 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: academyflow-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      # Allow the nginx-served frontend (and direct localhost access) to call the API.
+      ALLOWED_ORIGIN: http://localhost:8080
+    # Explicit public DNS resolvers. Docker Desktop on Windows/WSL2 sometimes
+    # fails to resolve mongodb+srv:// SRV records (ENOTFOUND _mongodb._tcp...)
+    # using the default internal DNS, even though normal lookups work fine.
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    ports:
+      - "3001:3001" # exposed for direct API access / debugging; not required by the frontend
+    volumes:
+      # Persists server/data.json across container restarts ONLY when MONGODB_URI
+      # is unset. Harmless (and unused) once you point MONGODB_URI at Atlas.
+      - academyflow-data:/app/server
+    networks:
+      - academyflow
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: academyflow-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+    networks:
+      - academyflow
+
+  # ─── Optional local MongoDB ─────────────────────────────────────────────────
+  # Not started by default. Run `docker compose --profile local-db up` to use
+  # a fully local DB instead of Atlas — then set MONGODB_URI in .env to:
+  #   mongodb://mongo:27017/academyflow
+  mongo:
+    image: mongo:7
+    container_name: academyflow-mongo
+    restart: unless-stopped
+    profiles:
+      - local-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - academyflow-mongo-data:/data/db
+    networks:
+      - academyflow
+
+networks:
+  academyflow:
+    driver: bridge
+    driver_opts:
+      # WSL2 (especially behind a VPN, corporate network, or some routers)
+      # often has an effective MTU below Docker's default of 1500. Larger
+      # packets get silently corrupted/dropped mid-handshake, which manifests
+      # as exactly this symptom: "SSL alert number 80" during the Mongo Atlas
+      # TLS handshake, even though plain HTTP/DNS traffic works fine. 1400 is
+      # a safe, widely-used value that resolves it without needing to touch
+      # Windows' .wslconfig or restart WSL itself.
+      com.docker.network.driver.mtu: 1400
+
+volumes:
+  academyflow-data:
+  academyflow-mongo-data:

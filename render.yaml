@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: academyflow-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server/index.mjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: 3001
+      - key: ADMIN_PASSWORD
+        sync: false   # Set this manually in the Render dashboard
+      - key: MONGODB_URI
+        sync: false   # Set this manually in the Render dashboard
+      - key: ALLOWED_ORIGIN
+        sync: false   # Set to your Netlify URL once you have it, e.g. https://your-app.netlify.app
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURE
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+    disk:
+      name: academyflow-data
+      mountPath: /opt/render/project/src/server
+      sizeGB: 1

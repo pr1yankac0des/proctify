@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Type */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Proctify identity palette — ink/paper/brass, not generic indigo/emerald SaaS. */
+  --color-ink-950: #14171F;
+  --color-ink-700: #2B3142;
+  --color-ink-500: #5B6275;
+  --color-ink-300: #8C92A3;
+
+  --color-paper-50: #F7F5F0;
+  --color-paper-100: #EEEAE0;
+  --color-paper-200: #E2DDCF;
+
+  --color-brass-50: #F6F0E4;
+  --color-brass-100: #EBE0C8;
+  --color-brass-600: #8A6D3B;
+  --color-brass-700: #6E5630;
+
+  --color-signal-50: #F8EFED;
+  --color-signal-100: #F1E2DE;
+  --color-signal-600: #8F3A3A;
+  --color-signal-700: #7A2E2E;
+
+  --color-verify-50: #EAF1ED;
+  --color-verify-100: #DFE9E2;
+  --color-verify-600: #4A7563;
+  --color-verify-700: #3D6353;
+
+  /* Dark-mode counterparts (deep ink page, warm-tinted surfaces, same accents lightened) */
+  --color-ink-dark-bg: #11141B;
+  --color-ink-dark-surface: #181C26;
+  --color-ink-dark-border: #2B3142;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-display);
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-paper-50 text-ink-950 transition-colors duration-200;
+  }
+
+  html.dark body {
+    background-color: var(--color-ink-dark-bg);
+    color: var(--color-paper-50);
+  }
+}
+
+@layer utilities {
+  /* Eyebrow label — small-caps tracked label used above headings throughout */
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--color-brass-700);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  html.dark .eyebrow { color: #C9AD78; }
+  .eyebrow::before {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: var(--color-brass-600);
+  }
+
+  /* Seal mark — circular status indicator replacing generic colored-pill checkmarks */
+  .seal {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .seal::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed currentColor;
+    border-radius: 50%;
+    opacity: 0.45;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+
+  .animate-shake {
+    animation: shake 0.45s ease-in-out;
+  }
+
+  .animate-pulse-skeleton {
+    animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  }
+
+  .timer-amber {
+    animation: timer-flash-amber 1s ease-in-out infinite;
+  }
+
+  .timer-danger {
+    animation: timer-pulse-danger 0.8s ease-in-out infinite;
+  }
+
+  .exam-mode {
+    @apply select-none;
+  }
+  
+  .exam-mode * {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version */
+  }
+
+  /* Allow inputs/textareas to still be selectable if needed (like the code editor) */
+  .exam-mode input, .exam-mode textarea, .exam-mode [contenteditable="true"], .exam-mode .monaco-editor {
+    @apply select-auto;
+    -webkit-user-select: auto;
+    user-select: auto;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes timer-flash-amber {
+  0%, 100% { color: var(--color-brass-600); }
+  50% { color: var(--color-brass-700); }
+}
+
+@keyframes timer-pulse-danger {
+  0%, 100% {
+    color: var(--color-signal-600);
+    transform: scale(1);
+  }
+  50% {
+    color: var(--color-signal-700);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-paper-200) 25%,
+    var(--color-paper-100) 50%,
+    var(--color-paper-200) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+html.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-ink-dark-surface) 25%,
+    var(--color-ink-700) 50%,
+    var(--color-ink-dark-surface) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
