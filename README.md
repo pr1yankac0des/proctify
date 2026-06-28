@@ -63,9 +63,11 @@ You can also run the full stack with Docker — see `docker-compose.yml`. `docke
 
 ## Email Verification
 
-Verification codes are sent via SMTP. Copy `.env.example` to `.env` and configure your mail provider (e.g. Gmail with an [App Password](https://myaccount.google.com/apppasswords)).
+Verification codes are sent via SMTP. Copy `.env.example` to `.env` and configure your mail provider (e.g. Gmail with an [App Password](https://myaccount.google.com/apppasswords)) for **local development**.
 
-**Without SMTP (dev mode):** codes are printed in the API terminal and shown on-screen to the student.
+**Without SMTP (dev mode):** codes are printed in the API terminal and shown on-screen to the student. This also applies automatically in production if SMTP isn't configured.
+
+**Important — Render free tier:** as of September 2025, Render blocks outbound traffic on SMTP ports (25/465/587) for free web services entirely; this is a platform policy, not a configuration issue. If deploying the API to Render's free tier, leave the `SMTP_*` environment variables unset — the app will automatically fall back to displaying verification codes on-screen rather than emailing them. To send real emails from Render, either upgrade to a paid instance, or switch `server/email.mjs` to an HTTPS-API-based email provider (e.g. Resend, SendGrid) instead of SMTP.
 
 ## Scripts
 

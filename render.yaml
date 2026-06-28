@@ -17,18 +17,11 @@ services:
         sync: false   # Set this manually in the Render dashboard
       - key: ALLOWED_ORIGIN
         sync: false   # Set to your Netlify URL once you have it, e.g. https://your-app.netlify.app
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        sync: false
-      - key: SMTP_SECURE
-        sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
-        sync: false
-      - key: SMTP_FROM
-        sync: false
+    # No SMTP_* variables: Render's free tier blocks outbound SMTP ports
+    # (25/465/587) entirely as a platform policy (see README "Email
+    # Verification" section). Leaving these unset means the app automatically
+    # falls back to displaying verification codes on-screen instead of
+    # emailing them — the correct behavior for a free-tier deployment.
     # No persistent disk: Render's disks are a paid-only feature and require a
     # card on file even on the free plan. We don't need one anyway — MongoDB
     # Atlas is the production data store, not the local server/data.json

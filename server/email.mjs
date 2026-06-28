@@ -23,21 +23,25 @@ function getTransporter() {
 
 export async function sendVerificationEmail(to, code) {
   const transport = getTransporter()
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@academyflow.local'
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@proctify.local'
 
-  const subject = 'AcademyFlow — Email Verification Code'
-  const text = `Your AcademyFlow verification code is: ${code}\n\nThis code expires in 15 minutes. Do not share it with anyone.`
+  const subject = 'Proctify — Email Verification Code'
+  const text = `Your Proctify verification code is: ${code}\n\nThis code expires in 15 minutes. Do not share it with anyone.`
   const html = `
     <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
-      <h2 style="color:#4f46e5;">AcademyFlow Verification</h2>
+      <h2 style="color:#8A6D3B;">Proctify Verification</h2>
       <p>Your verification code is:</p>
-      <p style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#1e293b;">${code}</p>
-      <p style="color:#64748b;font-size:14px;">This code expires in 15 minutes. Do not share it with anyone.</p>
+      <p style="font-size:32px;font-weight:bold;letter-spacing:8px;color:#14171F;">${code}</p>
+      <p style="color:#5B6275;font-size:14px;">This code expires in 15 minutes. Do not share it with anyone.</p>
     </div>
   `
 
   if (!transport) {
-    console.log(`[AcademyFlow] SMTP not configured. Verification code for ${to}: ${code}`)
+    // Dev/no-SMTP mode: also used in production on Render's free tier, which
+    // blocks outbound SMTP ports (25/465/587) entirely as of Sep 2025 — see
+    // https://render.com/changelog/free-web-services-will-no-longer-allow-outbound-traffic-to-smtp-ports
+    // The frontend displays devCode on-screen instead of requiring real email.
+    console.log(`[Proctify] SMTP not configured or unavailable. Verification code for ${to}: ${code}`)
     return { sent: false, devCode: code }
   }
 

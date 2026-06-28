@@ -62,7 +62,7 @@ function jsonOptions(method, body, token, tokenHeader = 'x-student-token') {
 try {
   await waitForServer()
   const health = await request('/health')
-  assert.deepEqual(health.body, { ok: true, service: 'academyflow-api' })
+  assert.deepEqual(health.body, { ok: true, service: 'proctify-api' })
   assert.equal(health.response.headers.get('x-content-type-options'), 'nosniff')
   assert.equal((await request('/tests')).response.status, 401)
   assert.equal((await request('/submissions/student?studentId=fake')).response.status, 401)
